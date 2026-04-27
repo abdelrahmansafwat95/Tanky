@@ -4,11 +4,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 import { TRANSACTIONS, STATIONS } from "@/constants/mockData";
 import { Feather } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function HistoryScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -33,8 +34,10 @@ export default function HistoryScreen() {
         renderItem={({ item }) => {
           const station = STATIONS.find(s => s.id === item.stationId);
           return (
-            <Link href={`/transaction/${item.id}`} asChild>
-              <TouchableOpacity style={[styles.transactionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <TouchableOpacity
+              onPress={() => router.push(`/transaction/${item.id}`)}
+              style={[styles.transactionCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+            >
                 <View style={[styles.iconContainer, { backgroundColor: colors.secondary }]}>
                   <Feather name="droplet" size={24} color={colors.primary} />
                 </View>
@@ -51,7 +54,6 @@ export default function HistoryScreen() {
                   <Text style={[styles.litresText, { color: colors.mutedForeground }]}>{item.litres} L</Text>
                 </View>
               </TouchableOpacity>
-            </Link>
           );
         }}
       />

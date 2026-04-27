@@ -82,23 +82,24 @@ export default function HomeScreen() {
         {/* Recent Transactions */}
         <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Recent Transactions</Text>
-          <Link href="/(tabs)/history" asChild>
-            <TouchableOpacity>
-              <Text style={[styles.seeAll, { color: colors.primary }]}>See All</Text>
-            </TouchableOpacity>
-          </Link>
+          <TouchableOpacity onPress={() => router.push("/(tabs)/history")}>
+            <Text style={[styles.seeAll, { color: colors.primary }]}>See All</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.transactionsList}>
           {recentTransactions.map((txn, index) => {
             const station = STATIONS.find(s => s.id === txn.stationId);
             return (
-              <Link href={`/transaction/${txn.id}`} asChild key={txn.id}>
-                <TouchableOpacity style={[
+              <TouchableOpacity
+                key={txn.id}
+                onPress={() => router.push(`/transaction/${txn.id}`)}
+                style={[
                   styles.transactionItem,
                   { borderBottomColor: colors.border },
-                  index === recentTransactions.length - 1 && { borderBottomWidth: 0 }
-                ]}>
+                  index === recentTransactions.length - 1 ? { borderBottomWidth: 0 } : null
+                ]}
+              >
                   <View style={[styles.txnIcon, { backgroundColor: colors.secondary }]}>
                     <Feather name="droplet" size={20} color={colors.primary} />
                   </View>
@@ -112,8 +113,7 @@ export default function HomeScreen() {
                     <Text style={[styles.txnAmount, { color: colors.foreground }]}>-{txn.amount} EGP</Text>
                     <Text style={[styles.txnLitres, { color: colors.mutedForeground }]}>{txn.litres} L</Text>
                   </View>
-                </TouchableOpacity>
-              </Link>
+              </TouchableOpacity>
             );
           })}
         </View>
@@ -239,10 +239,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 20,
     marginBottom: 32,
-    shadowColor: "#F59E0B",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
     elevation: 8,
   },
   scanText: {

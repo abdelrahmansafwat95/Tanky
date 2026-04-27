@@ -4,11 +4,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 import { STATIONS } from "@/constants/mockData";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function StationsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"All" | "Open Now" | "24/7">("All");
 
@@ -68,8 +69,10 @@ export default function StationsScreen() {
           paddingBottom: Math.max(insets.bottom, Platform.OS === "web" ? 34 : 0) + 100
         }}
         renderItem={({ item }) => (
-          <Link href={`/station/${item.id}`} asChild>
-            <TouchableOpacity style={[styles.stationCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <TouchableOpacity
+            onPress={() => router.push(`/station/${item.id}`)}
+            style={[styles.stationCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+          >
               <View style={styles.stationHeader}>
                 <View style={[styles.brandIcon, { backgroundColor: colors.secondary }]}>
                   <MaterialCommunityIcons name="gas-station" size={24} color={colors.primary} />
@@ -98,7 +101,6 @@ export default function StationsScreen() {
                 </View>
               </View>
             </TouchableOpacity>
-          </Link>
         )}
       />
     </View>
