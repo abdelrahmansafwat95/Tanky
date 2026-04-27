@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "Cfd0RogOYNwguWUv9AQH-"
+uri = "file://artifacts/driver-app/assets/images/icon.png"
+type = "image"
+title = "fuelgo app icon"
