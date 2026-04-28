@@ -11,8 +11,8 @@
     "push": "drizzle-kit push --config ./drizzle.config.ts",
     "push-force": "drizzle-kit push --force --config ./drizzle.config.ts",
     "generate": "drizzle-kit generate --config ./drizzle.config.ts",
-    "seed": "tsx src/seed.ts",
-    "seed:reset": "tsx src/seed-reset.ts && tsx src/seed.ts",
+    "seed": "node --env-file=.env --import tsx src/seed.ts",
+    "seed:reset": "node --env-file=.env --import tsx src/seed-reset.ts && node --env-file=.env --import tsx src/seed.ts",
     "studio": "drizzle-kit studio --config ./drizzle.config.ts"
   },
   "dependencies": {
