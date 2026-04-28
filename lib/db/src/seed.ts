@@ -10,10 +10,16 @@ import {
   fuelPricesTable,
   budgetAllocationsTable,
 } from "./schema";
+import { eq } from "drizzle-orm";
 import crypto from "node:crypto";
+import bcrypt from "bcryptjs";
 
-function sha256(input: string): string {
-  return crypto.createHash("sha256").update(input).digest("hex");
+async function hashPassword(input: string): Promise<string> {
+  return bcrypt.hash(input, 12);
+}
+
+async function hashPin(input: string): Promise<string> {
+  return bcrypt.hash(input, 10);
 }
 
 function randomToken(bytes = 32): string {
@@ -22,6 +28,21 @@ function randomToken(bytes = 32): string {
 
 async function seed() {
   console.log("Seeding FuelGo database...");
+
+  const existing = await db
+    .select({ id: companiesTable.id })
+    .from(companiesTable)
+    .where(eq(companiesTable.commercialRegisterNo, "CR-2024-001234"))
+    .limit(1);
+
+  if (existing.length > 0) {
+    console.log(
+      "  Database already seeded (Cairo Express Logistics exists).",
+    );
+    console.log("  Skipping. To re-seed, run: pnpm run seed:reset");
+    await pool.end();
+    return;
+  }
 
   const [company] = await db
     .insert(companiesTable)
@@ -47,7 +68,7 @@ async function seed() {
     .values({
       email: "admin@cairoexpress.eg",
       phone: "+201001234567",
-      passwordHash: sha256("ChangeMe123!"),
+      passwordHash: await hashPassword("ChangeMe123!"),
       fullName: "Mohamed Saad",
       role: "company_admin",
       companyId: company.id,
@@ -61,7 +82,7 @@ async function seed() {
     .values({
       email: "ahmed.hassan@cairoexpress.eg",
       phone: "+201112345678",
-      passwordHash: sha256("DriverPass123!"),
+      passwordHash: await hashPassword("DriverPass123!"),
       fullName: "Ahmed Hassan",
       role: "driver",
       companyId: company.id,
@@ -101,7 +122,7 @@ async function seed() {
       assignedVehicleId: vehicle.id,
       dailyLimitEgp: "500.00",
       monthlyLimitEgp: "8500.00",
-      pinHash: sha256("1234"),
+      pinHash: await hashPin("1234"),
       status: "active",
     })
     .returning();
@@ -181,7 +202,7 @@ async function seed() {
     .values({
       email: "attendant.maadi@wataniya.eg",
       phone: "+201223334444",
-      passwordHash: sha256("AttendantPass123!"),
+      passwordHash: await hashPassword("AttendantPass123!"),
       fullName: "Karim El Sayed",
       role: "station_attendant",
       stationId: insertedStations[0].id,
@@ -194,7 +215,7 @@ async function seed() {
     stationId: insertedStations[0].id,
     employeeNumber: "WAT-001",
     nationalId: "28505051234567",
-    pinHash: sha256("4321"),
+    pinHash: await hashPin("4321"),
     shiftStart: "06:00",
     shiftEnd: "18:00",
     status: "active",
